@@ -78,8 +78,10 @@ module CouchRest
     # GET a document from CouchDB, by id. Returns a Document or Design.
     def get(id, params = {})
       slug = escape_docid(id)
+      opts = {}
+      opts[:create_additions] = true if params.delete(:decode_object)
       url = CouchRest.paramify_url("#{@root}/#{slug}", params)
-      result = CouchRest.get(url)
+      result = CouchRest.get(url, opts)
       return result unless result.is_a?(Hash)
       doc = if /^_design/ =~ result["_id"]
         Design.new(result)
